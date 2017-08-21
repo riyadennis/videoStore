@@ -3,6 +3,7 @@
 namespace videoStore;
 
 use videoStore\Rental;
+use videoStore\Movie;
 
 class Customer
 {
@@ -24,8 +25,9 @@ class Customer
     {
         return $this->name;
     }
-    
-    public function getRentals(){
+
+    public function getRentals()
+    {
         return $this->rental;
     }
 
@@ -37,23 +39,7 @@ class Customer
         $totalAmount = 0;
         /* @var Rental $rental */
         foreach ($this->rental as $rental) {
-            $movie = $rental->getMovie();
-            switch ($movie->getPriceCode()) {
-                case Movie::$regular: $amount = $amount + 2;
-                    if ($rental->getDaysRented() > 2) {
-                        $amount = ($rental->getDaysRented() - 2) * 1.5;
-                    }
-                    break;
-                case Movie::$children: $amount = $amount + 1.5;
-                    if ($rental->getDaysRented() > 3) {
-                        $amount += ($rental->getDaysRented() - 3) * 1.5;
-                    }
-                    break;
-                case Movie::$newRelease:
-                    echo "hre";
-                    $amount += $rental->getDaysRented() * 3;
-                    break;
-            }
+            $amount = $rental->amountFor();
             $frequentRenterPoints++;
             if ($rental->getMovie()->getPriceCode() == Movie::$newRelease &&
                     $rental->getDaysRented() > 1) {
@@ -65,8 +51,7 @@ class Customer
         }
         //add footer lines
         $result .= "Amount owed is " . $totalAmount . "\n";
-        $result .= "You earned " . $frequentRenterPoints . " frequent renter points";
+        $result .= "You earned " . $frequentRenterPoints . " frequent renter points \n";
         return $result;
     }
-
 }
